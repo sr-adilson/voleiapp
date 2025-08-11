@@ -520,13 +520,33 @@ function closeEditModal() {
 // Inicializar aplicação quando o DOM estiver carregado
 let membershipManager;
 let paymentManager;
+let attendanceManager;
+let dashboardManager;
+let notificationsManager;
+let communicationManager;
 
 document.addEventListener('DOMContentLoaded', () => {
     membershipManager = new MembershipManager();
     paymentManager = new PaymentManager(membershipManager);
     
-    // Inicializar sistema de pagamentos
-    initializePaymentSystem();
+    // Aguardar um pouco para garantir que todos os managers estejam carregados
+    setTimeout(() => {
+        attendanceManager = new AttendanceManager(membershipManager);
+        dashboardManager = new DashboardManager({ membershipManager, paymentManager, attendanceManager });
+        notificationsManager = new NotificationsManager({ membershipManager, paymentManager, attendanceManager });
+        communicationManager = new CommunicationManager({ membershipManager, paymentManager, attendanceManager });
+        
+        // Inicializar todos os sistemas
+        initializePaymentSystem();
+        attendanceManager.initializeUI();
+        dashboardManager.renderAll();
+        notificationsManager.runChecks();
+        communicationManager.initializeCommunicationSystem();
+        
+        // Configurar sistema de abas para comunicação
+        setupCommunicationTabs();
+        setupCommunicationForms();
+    }, 100);
 });
 
 // ===== SISTEMA DE PAGAMENTOS =====
@@ -848,3 +868,134 @@ function refreshPayments() {
 window.membershipManager = membershipManager;
 window.paymentManager = paymentManager;
 window.refreshPayments = refreshPayments;
+
+// ===== FUNÇÕES DO SISTEMA DE COMUNICAÇÃO =====
+
+// Configurar sistema de abas
+function setupCommunicationTabs() {
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetTab = btn.dataset.tab;
+            
+            // Remover classe active de todos os botões e painéis
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabPanes.forEach(p => p.classList.remove('active'));
+            
+            // Adicionar classe active ao botão clicado
+            btn.classList.add('active');
+            
+            // Mostrar painel correspondente
+            const targetPane = document.getElementById(`${targetTab}-tab`);
+            if (targetPane) {
+                targetPane.classList.add('active');
+            }
+        });
+    });
+}
+
+// Configurar formulários de comunicação
+function setupCommunicationForms() {
+    // Toggle do formulário de avisos
+    window.toggleAnnouncementForm = function() {
+        const form = document.getElementById('announcementForm');
+        if (form.style.display === 'none') {
+            form.style.display = 'block';
+            form.querySelector('input[name="title"]').focus();
+        } else {
+            form.style.display = 'none';
+            form.reset();
+        }
+    };
+
+    // Toggle do formulário de mensagens
+    window.toggleMessageForm = function() {
+        const form = document.getElementById('messageForm');
+        if (form.style.display === 'none') {
+            form.style.display = 'block';
+            form.querySelector('input[name="title"]').focus();
+        } else {
+            form.style.display = 'none';
+            form.reset();
+        }
+    };
+
+    // Configurar mudança no destinatário das mensagens
+    const messageTarget = document.getElementById('messageTarget');
+    const specificMemberGroup = document.getElementById('specificMemberGroup');
+    const specificMember = document.getElementById('specificMember');
+
+    if (messageTarget && specificMemberGroup && specificMember) {
+        messageTarget.addEventListener('change', () => {
+            if (messageTarget.value === 'specific') {
+                specificMemberGroup.style.display = 'block';
+                // Carregar lista de membros
+                const members = membershipManager.getAllMembers();
+                specificMember.innerHTML = '<option value="">Selecione um membro</option>';
+                members.forEach(member => {
+                    const option = document.createElement('option');
+                    option.value = member.id;
+                    option.textContent = member.name;
+                    specificMember.appendChild(option);
+                });
+            } else {
+                specificMemberGroup.style.display = 'none';
+                specificMember.value = '';
+            }
+        });
+    }
+
+    // Configurar formulário de avisos
+    const announcementForm = document.getElementById('announcementForm');
+    if (announcementForm) {
+        announcementForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = new FormData(announcementForm);
+            
+            const announcementData = {
+                type: 'announcement',
+                title: formData.get('title'),
+                content: formData.get('content'),
+                priority: formData.get('priority'),
+                expiresAt: formData.get('expiresAt') || null,
+                author: 'admin', // Usuário atual
+                target: 'all'
+            };
+
+            if (communicationManager) {
+                communicationManager.addMessage(announcementData);
+                announcementForm.reset();
+                announcementForm.style.display = 'none';
+                communicationManager.showToast('Aviso publicado com sucesso!', 'success');
+            }
+        });
+    }
+
+    // Configurar formulário de mensagens
+    const messageForm = document.getElementById('messageForm');
+    if (messageForm) {
+        messageForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = new FormData(messageForm);
+            
+            const messageData = {
+                type: 'message',
+                title: formData.get('title'),
+                content: formData.get('content'),
+                priority: formData.get('priority'),
+                author: 'admin', // Usuário atual
+                target: formData.get('target') === 'specific' ? formData.get('specificMember') : 'all'
+            };
+
+            if (communicationManager) {
+                communicationManager.addMessage(messageData);
+                messageForm.reset();
+                messageForm.style.display = 'none';
+                specificMemberGroup.style.display = 'none';
+                communicationManager.showToast('Mensagem enviada com sucesso!', 'success');
+            }
+        });
+    }
+}
