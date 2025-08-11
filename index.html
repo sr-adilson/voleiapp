@@ -3,7 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Mensalistas - Vôlei</title>
+    <title>VoleiApp - Sistema de Gestão</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Sistema completo de gestão para times de vôlei com controle de membros, pagamentos, treinos e comunicação">
+    <meta name="theme-color" content="#16213e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="VoleiApp">
+    <meta name="msapplication-TileColor" content="#16213e">
+    <meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+    <link rel="apple-touch-icon" href="/icons/icon-152x152.png">
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -13,8 +30,20 @@
     <div class="container">
         <header class="header">
             <div class="header-content">
-                <h1><i class="fas fa-volleyball-ball"></i> Cadastro de Mensalistas - Vôlei</h1>
-                <p>Gerencie os membros do seu time de vôlei</p>
+                <div class="header-main">
+                    <h1><i class="fas fa-volleyball-ball"></i> VoleiApp</h1>
+                    <p>Sistema de Gestão para Times de Vôlei</p>
+                </div>
+                <div class="header-actions">
+                    <div class="online-status online">
+                        <i class="fas fa-wifi"></i>
+                        <span>Online</span>
+                    </div>
+                    <button class="btn btn-secondary pwa-status-btn" onclick="window.pwaManager.showPWAStatus()">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>PWA</span>
+                    </button>
+                </div>
             </div>
         </header>
 
@@ -74,8 +103,8 @@
 
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="mensalidade">Valor da Mensalidade (R$) *</label>
-                                    <input type="number" id="mensalidade" name="mensalidade" required min="0" step="0.01" placeholder="150.00">
+                                    <label for="mensalidade">Valor da Mensalidade *</label>
+                                    <input type="number" id="mensalidade" name="mensalidade" required min="0" step="0.01" placeholder="0.00">
                                 </div>
                                 <div class="form-group">
                                     <label for="dataInicio">Data de Início *</label>
@@ -85,15 +114,12 @@
 
                             <div class="form-group">
                                 <label for="observacoes">Observações</label>
-                                <textarea id="observacoes" name="observacoes" rows="3" placeholder="Informações adicionais sobre o mensalista..."></textarea>
+                                <textarea id="observacoes" name="observacoes" rows="3" placeholder="Informações adicionais..."></textarea>
                             </div>
 
                             <div class="form-actions">
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save"></i> Cadastrar Mensalista
-                                </button>
-                                <button type="reset" class="btn btn-secondary">
-                                    <i class="fas fa-times"></i> Limpar Formulário
+                                    <i class="fas fa-user-plus"></i> Cadastrar Mensalista
                                 </button>
                             </div>
                         </form>
@@ -106,227 +132,537 @@
                 <div class="card">
                     <div class="card-header">
                         <h2><i class="fas fa-users"></i> Mensalistas Cadastrados</h2>
-                        <div class="search-container">
-                            <input type="text" id="searchInput" placeholder="Buscar mensalista...">
-                            <i class="fas fa-search"></i>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="stats">
-                            <div class="stat-item">
-                                <span class="stat-number" id="totalMembers">0</span>
-                                <span class="stat-label">Total de Mensalistas</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-number" id="totalRevenue">R$ 0,00</span>
-                                <span class="stat-label">Receita Mensal</span>
-                            </div>
-                        </div>
-
-                        <div class="members-list" id="membersList">
-                            <div class="empty-state">
-                                <i class="fas fa-volleyball-ball"></i>
-                                <h3>Nenhum mensalista cadastrado ainda</h3>
-                                <p>Cadastre o primeiro mensalista usando o formulário acima.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Seção de Notificações -->
-            <section class="notifications-section">
-                <div class="card">
-                    <div class="card-header">
-                        <h2><i class="fas fa-bell"></i> Notificações e Lembretes</h2>
-                    </div>
-                    <div class="card-body">
-                        <div class="notifications-actions">
-                            <button class="btn btn-primary" onclick="notificationsManager.runChecks(true)">
-                                <i class="fas fa-sync"></i> Verificar Agora
-                            </button>
-                            <button class="btn btn-secondary" onclick="notificationsManager.exportReminders()">
-                                <i class="fas fa-download"></i> Exportar Lembretes
-                            </button>
-                        </div>
-                        <div id="notificationsList" class="notifications-list"></div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Seção de Dashboard -->
-            <section class="dashboard-section">
-                <div class="card">
-                    <div class="card-header">
-                        <h2><i class="fas fa-chart-line"></i> Dashboard</h2>
-                    </div>
-                    <div class="card-body">
-                        <div class="dashboard-grid">
-                            <div class="chart-card">
-                                <h3>Membros por Posição</h3>
-                                <canvas id="chartMembersByPosition"></canvas>
-                            </div>
-                            <div class="chart-card">
-                                <h3>Receita x Pendências (Últimos 6 meses)</h3>
-                                <canvas id="chartRevenue"></canvas>
-                            </div>
-                            <div class="chart-card">
-                                <h3>Presença por Mês</h3>
-                                <canvas id="chartAttendance"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Seção de Treinos e Presenças -->
-            <section class="attendance-section">
-                <div class="card">
-                    <div class="card-header">
-                        <h2><i class="fas fa-calendar-check"></i> Treinos e Presenças</h2>
-                    </div>
-                    <div class="card-body">
-                        <form id="sessionForm" class="registration-form">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="date">Data *</label>
-                                    <input type="date" id="date" name="date" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="time">Horário *</label>
-                                    <input type="time" id="time" name="time" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="location">Local *</label>
-                                    <input type="text" id="location" name="location" placeholder="Quadra Central" required>
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group" style="flex: 1">
-                                    <label for="notes">Observações</label>
-                                    <input type="text" id="notes" name="notes" placeholder="Treino tático, levar coletes, etc.">
-                                </div>
-                            </div>
-                            <div class="form-actions">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-plus"></i> Adicionar Treino
-                                </button>
-                            </div>
-                        </form>
-
-                        <div class="attendance-filters">
-                            <div class="filter-group">
-                                <label for="attendanceMonthFilter">Mês</label>
-                                <select id="attendanceMonthFilter"></select>
-                            </div>
-                            <div class="filter-group">
-                                <label for="attendanceYearFilter">Ano</label>
-                                <select id="attendanceYearFilter"></select>
-                            </div>
-                        </div>
-
-                        <div id="sessionsList" class="sessions-list"></div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Seção de Pagamentos -->
-            <section class="payments-section">
-                <div class="card">
-                    <div class="card-header">
-                        <h2><i class="fas fa-credit-card"></i> Sistema de Pagamentos</h2>
                         <div class="header-actions">
-                            <button class="btn btn-success" onclick="paymentManager.exportPaymentData()">
-                                <i class="fas fa-download"></i> Exportar
-                            </button>
-                            <label for="importPayments" class="btn btn-secondary">
-                                <i class="fas fa-upload"></i> Importar
-                            </label>
-                            <input type="file" id="importPayments" accept=".json" style="display: none;" onchange="handlePaymentImport(event)">
+                            <div class="search-box">
+                                <input type="text" id="searchInput" placeholder="Buscar por nome, email, telefone ou posição...">
+                                <i class="fas fa-search"></i>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body">
-                        <!-- Estatísticas Financeiras -->
-                        <div class="financial-stats">
-                            <div class="stat-card success">
+                        <div class="stats-row">
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3 id="totalMembers">0</h3>
+                                    <p>Total de Membros</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
                                 <div class="stat-icon">
                                     <i class="fas fa-dollar-sign"></i>
                                 </div>
                                 <div class="stat-content">
-                                    <h3>Receita Total</h3>
-                                    <p class="stat-value">R$ <span id="totalRevenue">0.00</span></p>
+                                    <h3 id="totalRevenue">R$ 0,00</h3>
+                                    <p>Receita Mensal</p>
                                 </div>
                             </div>
-                            <div class="stat-card warning">
-                                <div class="stat-icon">
-                                    <i class="fas fa-clock"></i>
+                        </div>
+                        <div id="membersList" class="members-list">
+                            <!-- Lista será renderizada aqui -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sistema de Pagamentos -->
+            <section class="payments-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-credit-card"></i> Sistema de Pagamentos</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="payments-stats">
+                            <div class="stat-card">
+                                <h3>Total de Pagamentos</h3>
+                                <p id="totalPayments">0</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Receita Total</h3>
+                                <p id="totalRevenuePayments">R$ 0,00</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Pagamentos Pendentes</h3>
+                                <p id="pendingPayments">0</p>
+                            </div>
+                        </div>
+                        
+                        <div class="payments-filters">
+                            <select id="monthFilter">
+                                <option value="">Todos os meses</option>
+                                <option value="1">Janeiro</option>
+                                <option value="2">Fevereiro</option>
+                                <option value="3">Março</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Maio</option>
+                                <option value="6">Junho</option>
+                                <option value="7">Julho</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Setembro</option>
+                                <option value="10">Outubro</option>
+                                <option value="11">Novembro</option>
+                                <option value="12">Dezembro</option>
+                            </select>
+                            <select id="yearFilter">
+                                <option value="">Todos os anos</option>
+                                <option value="2024">2024</option>
+                                <option value="2025">2025</option>
+                                <option value="2026">2026</option>
+                            </select>
+                            <select id="statusFilter">
+                                <option value="">Todos os status</option>
+                                <option value="pendente">Pendente</option>
+                                <option value="pago">Pago</option>
+                                <option value="atrasado">Atrasado</option>
+                                <option value="cancelado">Cancelado</option>
+                            </select>
+                        </div>
+                        
+                        <div id="paymentsList" class="payments-list">
+                            <!-- Lista de pagamentos será renderizada aqui -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sistema de Presença e Treinos -->
+            <section class="attendance-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-calendar-check"></i> Controle de Presença e Treinos</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="attendance-form">
+                            <h3>Nova Sessão de Treino</h3>
+                            <form id="trainingSessionForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="sessionDate">Data do Treino *</label>
+                                        <input type="date" id="sessionDate" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="sessionTime">Horário *</label>
+                                        <input type="time" id="sessionTime" required>
+                                    </div>
                                 </div>
-                                <div class="stat-content">
-                                    <h3>Pendente</h3>
-                                    <p class="stat-value">R$ <span id="pendingRevenue">0.00</span></p>
+                                <div class="form-group">
+                                    <label for="sessionNotes">Observações</label>
+                                    <textarea id="sessionNotes" placeholder="Detalhes do treino..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Criar Sessão
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <div class="sessions-list">
+                            <h3>Sessões de Treino</h3>
+                            <div id="trainingSessionsList">
+                                <!-- Lista de sessões será renderizada aqui -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dashboard e Analytics -->
+            <section class="dashboard-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-chart-line"></i> Dashboard e Analytics</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="dashboard-charts">
+                            <div class="chart-container">
+                                <h3>Evolução de Membros</h3>
+                                <canvas id="membersChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h3>Receita por Mês</h3>
+                                <canvas id="revenueChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h3>Presença nos Treinos</h3>
+                                <canvas id="attendanceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sistema de Notificações -->
+            <section class="notifications-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-bell"></i> Sistema de Notificações</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="notifications-settings">
+                            <h3>Configurações de Notificações</h3>
+                            <div class="notification-option">
+                                <label>
+                                    <input type="checkbox" id="paymentReminders" checked>
+                                    Lembretes de pagamentos vencidos
+                                </label>
+                            </div>
+                            <div class="notification-option">
+                                <label>
+                                    <input type="checkbox" id="trainingReminders" checked>
+                                    Lembretes de treinos
+                                </label>
+                            </div>
+                            <div class="notification-option">
+                                <label>
+                                    <input type="checkbox" id="maintenanceReminders" checked>
+                                    Lembretes de manutenção de equipamentos
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="notifications-list">
+                            <h3>Histórico de Notificações</h3>
+                            <div id="notificationsList">
+                                <!-- Lista de notificações será renderizada aqui -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sistema de Comunicação -->
+            <section class="communication-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-comments"></i> Sistema de Comunicação</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="communication-tabs">
+                            <button class="tab-btn active" data-tab="announcements">
+                                <i class="fas fa-bullhorn"></i> Anúncios
+                            </button>
+                            <button class="tab-btn" data-tab="messages">
+                                <i class="fas fa-envelope"></i> Mensagens
+                            </button>
+                            <button class="tab-btn" data-tab="history">
+                                <i class="fas fa-history"></i> Histórico
+                            </button>
+                        </div>
+                        
+                        <div class="tab-content active" id="announcements">
+                            <h3>Novo Anúncio</h3>
+                            <form id="announcementForm">
+                                <div class="form-group">
+                                    <label for="announcementTitle">Título *</label>
+                                    <input type="text" id="announcementTitle" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="announcementMessage">Mensagem *</label>
+                                    <textarea id="announcementMessage" required rows="4"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane"></i> Enviar Anúncio
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <div class="tab-content" id="messages">
+                            <h3>Nova Mensagem</h3>
+                            <form id="messageForm">
+                                <div class="form-group">
+                                    <label for="messageRecipient">Destinatário</label>
+                                    <select id="messageRecipient">
+                                        <option value="todos">Todos os Membros</option>
+                                        <!-- Opções serão preenchidas dinamicamente -->
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="messageContent">Mensagem *</label>
+                                    <textarea id="messageContent" required rows="4"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane"></i> Enviar Mensagem
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <div class="tab-content" id="history">
+                            <h3>Histórico de Comunicações</h3>
+                            <div id="communicationsHistory">
+                                <!-- Histórico será renderizado aqui -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sistema de Backup e Sincronização -->
+            <section class="backup-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-cloud-upload-alt"></i> Backup e Sincronização</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="backup-actions">
+                            <button class="btn btn-primary" onclick="window.backupManager.exportData()">
+                                <i class="fas fa-download"></i> Exportar Dados
+                            </button>
+                            <button class="btn btn-secondary" onclick="window.backupManager.importData()">
+                                <i class="fas fa-upload"></i> Importar Dados
+                            </button>
+                            <button class="btn btn-secondary" onclick="window.backupManager.syncWithCloud()">
+                                <i class="fas fa-sync-alt"></i> Sincronizar com Nuvem
+                            </button>
+                        </div>
+                        
+                        <div class="backup-status">
+                            <h3>Status da Sincronização</h3>
+                            <div class="status-item">
+                                <span class="status-label">Último backup:</span>
+                                <span id="lastBackupDate">Nunca</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Status da nuvem:</span>
+                                <span id="cloudStatus">Desconectado</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sistema PWA -->
+            <section class="pwa-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-mobile-alt"></i> Funcionalidades Mobile (PWA)</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="pwa-features">
+                            <div class="pwa-feature">
+                                <div class="feature-icon">
+                                    <i class="fas fa-download"></i>
+                                </div>
+                                <div class="feature-content">
+                                    <h3>Instalação</h3>
+                                    <p>Instale o VoleiApp na sua tela inicial para acesso rápido e funcionalidades offline</p>
+                                    <button class="btn btn-primary install-pwa-btn" onclick="window.pwaManager.installPWA()">
+                                        <i class="fas fa-download"></i> Instalar App
+                                    </button>
                                 </div>
                             </div>
-                            <div class="stat-card danger">
-                                <div class="stat-icon">
-                                    <i class="fas fa-exclamation-triangle"></i>
+
+                            <div class="pwa-feature">
+                                <div class="feature-icon">
+                                    <i class="fas fa-bell"></i>
                                 </div>
-                                <div class="stat-content">
-                                    <h3>Em Atraso</h3>
-                                    <p class="stat-value">R$ <span id="overdueRevenue">0.00</span></p>
+                                <div class="feature-content">
+                                    <h3>Notificações Push</h3>
+                                    <p>Receba notificações sobre pagamentos vencidos, treinos próximos e novas mensagens</p>
+                                    <button class="btn btn-secondary notification-btn" onclick="window.pwaManager.requestNotificationPermission()">
+                                        <i class="fas fa-bell"></i> Ativar Notificações
+                                    </button>
                                 </div>
                             </div>
-                            <div class="stat-card info">
-                                <div class="stat-icon">
-                                    <i class="fas fa-percentage"></i>
+
+                            <div class="pwa-feature">
+                                <div class="feature-icon">
+                                    <i class="fas fa-wifi"></i>
                                 </div>
-                                <div class="stat-content">
-                                    <h3>Taxa de Pagamento</h3>
-                                    <p class="stat-value"><span id="paymentRate">0</span>%</p>
+                                <div class="feature-content">
+                                    <h3>Modo Offline</h3>
+                                    <p>Acesse seus dados mesmo sem conexão com a internet</p>
+                                    <div class="offline-status">
+                                        <span class="status-indicator online"></span>
+                                        <span>Modo Online</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pwa-feature">
+                                <div class="feature-icon">
+                                    <i class="fas fa-sync-alt"></i>
+                                </div>
+                                <div class="feature-content">
+                                    <h3>Sincronização</h3>
+                                    <p>Sincronização automática em background quando a conexão for restaurada</p>
+                                    <button class="btn btn-secondary sync-btn" onclick="window.pwaManager.syncPendingData()">
+                                        <i class="fas fa-sync-alt"></i> Sincronizar Agora
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sistema de Gestão de Equipamentos -->
+            <section class="equipment-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-boxes"></i> Gestão de Equipamentos</h2>
+                    </div>
+                    <div class="card-body">
+                        <!-- Estatísticas -->
+                        <div class="equipment-stats" id="equipmentStats">
+                            <!-- Estatísticas serão renderizadas aqui -->
+                        </div>
+
+                        <!-- Formulário de Adicionar Equipamento -->
+                        <div class="equipment-form-container">
+                            <h3><i class="fas fa-plus"></i> Adicionar Novo Equipamento</h3>
+                            <form id="addEquipmentForm" class="equipment-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="equipmentName">Nome do Equipamento *</label>
+                                        <input type="text" id="equipmentName" required placeholder="Ex: Bola de Vôlei Mikasa">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="equipmentCategory">Categoria *</label>
+                                        <select id="equipmentCategory" required>
+                                            <option value="">Selecione...</option>
+                                            <option value="bola">Bola</option>
+                                            <option value="rede">Rede</option>
+                                            <option value="uniforme">Uniforme</option>
+                                            <option value="equipamento">Outros Equipamentos</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="equipmentQuantity">Quantidade *</label>
+                                        <input type="number" id="equipmentQuantity" min="1" required placeholder="1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="equipmentCondition">Condição *</label>
+                                        <select id="equipmentCondition" required>
+                                            <option value="">Selecione...</option>
+                                            <option value="excelente">Excelente</option>
+                                            <option value="bom">Bom</option>
+                                            <option value="regular">Regular</option>
+                                            <option value="ruim">Ruim</option>
+                                            <option value="inutilizável">Inutilizável</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="equipmentPurchaseDate">Data de Compra *</label>
+                                        <input type="date" id="equipmentPurchaseDate" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="equipmentNotes">Observações</label>
+                                        <textarea id="equipmentNotes" placeholder="Detalhes adicionais..."></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-plus"></i> Adicionar Equipamento
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Filtros e Busca -->
+                        <div class="equipment-filters">
+                            <h3><i class="fas fa-filter"></i> Filtros e Busca</h3>
+                            <div class="filters-row">
+                                <div class="filter-group">
+                                    <label for="categoryFilter">Categoria:</label>
+                                    <select id="categoryFilter">
+                                        <option value="todos">Todas as Categorias</option>
+                                        <option value="bola">Bola</option>
+                                        <option value="rede">Rede</option>
+                                        <option value="uniforme">Uniforme</option>
+                                        <option value="equipamento">Outros Equipamentos</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="conditionFilter">Condição:</label>
+                                    <select id="conditionFilter">
+                                        <option value="todos">Todas as Condições</option>
+                                        <option value="excelente">Excelente</option>
+                                        <option value="bom">Bom</option>
+                                        <option value="regular">Regular</option>
+                                        <option value="ruim">Ruim</option>
+                                        <option value="inutilizável">Inutilizável</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="equipmentSearch">Buscar:</label>
+                                    <input type="text" id="equipmentSearch" placeholder="Nome ou observações..." onkeyup="window.equipmentManager.filterEquipment()">
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Filtros de Pagamentos -->
-                        <div class="payment-filters">
-                            <div class="filter-group">
-                                <label for="paymentStatusFilter">Status:</label>
-                                <select id="paymentStatusFilter" onchange="filterPayments()">
-                                    <option value="">Todos os Status</option>
-                                    <option value="pending">Pendente</option>
-                                    <option value="paid">Pago</option>
-                                    <option value="overdue">Em Atraso</option>
-                                    <option value="cancelled">Cancelado</option>
-                                </select>
-                            </div>
-                            <div class="filter-group">
-                                <label for="paymentMonthFilter">Mês:</label>
-                                <select id="paymentMonthFilter" onchange="filterPayments()">
-                                    <option value="">Todos os Meses</option>
-                                    <option value="0">Janeiro</option>
-                                    <option value="1">Fevereiro</option>
-                                    <option value="2">Março</option>
-                                    <option value="3">Abril</option>
-                                    <option value="4">Maio</option>
-                                    <option value="5">Junho</option>
-                                    <option value="6">Julho</option>
-                                    <option value="7">Agosto</option>
-                                    <option value="8">Setembro</option>
-                                    <option value="9">Outubro</option>
-                                    <option value="10">Novembro</option>
-                                    <option value="11">Dezembro</option>
-                                </select>
-                            </div>
-                            <div class="filter-group">
-                                <label for="paymentYearFilter">Ano:</label>
-                                <select id="paymentYearFilter" onchange="filterPayments()">
-                                    <option value="">Todos os Anos</option>
-                                </select>
+                        <!-- Lista de Equipamentos -->
+                        <div class="equipment-list-container">
+                            <h3><i class="fas fa-list"></i> Inventário de Equipamentos</h3>
+                            <div id="equipmentList" class="equipment-list">
+                                <!-- Lista será renderizada aqui -->
                             </div>
                         </div>
 
-                        <!-- Lista de Pagamentos -->
-                        <div class="payments-list" id="paymentsList">
-                            <!-- Pagamentos serão carregados aqui -->
+                        <!-- Sistema de Empréstimos -->
+                        <div class="loan-system-container">
+                            <h3><i class="fas fa-handshake"></i> Sistema de Empréstimos</h3>
+                            
+                            <!-- Formulário de Empréstimo -->
+                            <div class="loan-form-container">
+                                <h4><i class="fas fa-plus"></i> Novo Empréstimo</h4>
+                                <form id="loanForm" class="loan-form">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="loanEquipment">Equipamento *</label>
+                                            <select id="loanEquipment" required>
+                                                <option value="">Selecione o equipamento...</option>
+                                                <!-- Opções serão preenchidas dinamicamente -->
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="loanMember">Membro *</label>
+                                            <select id="loanMember" required>
+                                                <option value="">Selecione o membro...</option>
+                                                <!-- Opções serão preenchidas dinamicamente -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="loanQuantity">Quantidade *</label>
+                                            <input type="number" id="loanQuantity" min="1" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="loanReturnDate">Data de Devolução *</label>
+                                            <input type="date" id="loanReturnDate" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="loanNotes">Observações</label>
+                                        <textarea id="loanNotes" placeholder="Detalhes do empréstimo..."></textarea>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-handshake"></i> Criar Empréstimo
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Lista de Empréstimos -->
+                            <div class="loans-list-container">
+                                <h4><i class="fas fa-list"></i> Empréstimos Ativos</h4>
+                                <div id="loansList" class="loans-list">
+                                    <!-- Lista será renderizada aqui -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ações de Equipamentos -->
+                        <div class="equipment-actions">
+                            <button class="btn btn-secondary" onclick="window.equipmentManager.exportData()">
+                                <i class="fas fa-download"></i> Exportar Dados
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -334,83 +670,42 @@
         </main>
     </div>
 
-    <!-- Modal de Pagamento -->
-    <div id="paymentModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-credit-card"></i> Gerenciar Pagamento</h2>
-                <span class="close" onclick="closePaymentModal()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="payment-details">
-                    <div class="member-info">
-                        <h3 id="paymentMemberName">Nome do Membro</h3>
-                        <p id="paymentMemberEmail">email@exemplo.com</p>
-                    </div>
-                    <div class="payment-info">
-                        <div class="info-row">
-                            <span class="label">Valor:</span>
-                            <span class="value" id="paymentAmount">R$ 0.00</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="label">Vencimento:</span>
-                            <span class="value" id="paymentDueDate">01/01/2024</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="label">Status:</span>
-                            <span class="value" id="paymentStatus">Pendente</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="payment-actions" id="paymentActions">
-                    <!-- Ações serão carregadas dinamicamente -->
-                </div>
-
-                <div class="payment-history" id="paymentHistory">
-                    <!-- Histórico será carregado dinamicamente -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Edição -->
+    <!-- Modal de Edição de Mensalista -->
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-edit"></i> Editar Mensalista</h2>
-                <span class="close">&times;</span>
+                <h3>Editar Mensalista</h3>
+                <span class="close" onclick="closeEditModal()">&times;</span>
             </div>
             <div class="modal-body">
-                <form id="editForm" class="registration-form">
-                    <input type="hidden" id="editId" name="editId">
-                    
+                <form id="editForm">
+                    <input type="hidden" id="editId">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="editNome">Nome Completo *</label>
-                            <input type="text" id="editNome" name="nome" required>
+                            <input type="text" id="editNome" name="editNome" required>
                         </div>
                         <div class="form-group">
                             <label for="editEmail">E-mail *</label>
-                            <input type="email" id="editEmail" name="email" required>
+                            <input type="email" id="editEmail" name="editEmail" required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label for="editTelefone">Telefone *</label>
-                            <input type="tel" id="editTelefone" name="telefone" required>
+                            <input type="tel" id="editTelefone" name="editTelefone" required>
                         </div>
                         <div class="form-group">
                             <label for="editIdade">Idade *</label>
-                            <input type="number" id="editIdade" name="idade" required min="14" max="80">
+                            <input type="number" id="editIdade" name="editIdade" required min="14" max="80">
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label for="editPosicao">Posição Preferida</label>
-                            <select id="editPosicao" name="posicao">
+                            <select id="editPosicao" name="editPosicao">
                                 <option value="">Selecione uma posição</option>
                                 <option value="levantador">Levantador</option>
                                 <option value="ponteiro">Ponteiro</option>
@@ -421,7 +716,7 @@
                         </div>
                         <div class="form-group">
                             <label for="editExperiencia">Nível de Experiência</label>
-                            <select id="editExperiencia" name="experiencia">
+                            <select id="editExperiencia" name="editExperiencia">
                                 <option value="">Selecione o nível</option>
                                 <option value="iniciante">Iniciante</option>
                                 <option value="intermediario">Intermediário</option>
@@ -432,18 +727,18 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="editMensalidade">Valor da Mensalidade (R$) *</label>
-                            <input type="number" id="editMensalidade" name="mensalidade" required min="0" step="0.01">
+                            <label for="editMensalidade">Valor da Mensalidade *</label>
+                            <input type="number" id="editMensalidade" name="editMensalidade" required min="0" step="0.01">
                         </div>
                         <div class="form-group">
                             <label for="editDataInicio">Data de Início *</label>
-                            <input type="date" id="editDataInicio" name="dataInicio" required>
+                            <input type="date" id="editDataInicio" name="editDataInicio" required>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="editObservacoes">Observações</label>
-                        <textarea id="editObservacoes" name="observacoes" rows="3"></textarea>
+                        <textarea id="editObservacoes" name="editObservacoes" rows="3"></textarea>
                     </div>
 
                     <div class="form-actions">
@@ -459,189 +754,16 @@
         </div>
     </div>
 
-    <!-- Sistema de Gestão de Equipamentos -->
-    <section class="equipment-section">
-        <div class="card">
-            <div class="card-header">
-                <h2><i class="fas fa-boxes"></i> Gestão de Equipamentos</h2>
-            </div>
-            <div class="card-body">
-                <!-- Estatísticas -->
-                <div class="equipment-stats" id="equipmentStats">
-                    <!-- Estatísticas serão renderizadas aqui -->
-                </div>
-
-                <!-- Formulário de Adicionar Equipamento -->
-                <div class="equipment-form-container">
-                    <h3><i class="fas fa-plus"></i> Adicionar Novo Equipamento</h3>
-                    <form id="addEquipmentForm" class="equipment-form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="equipmentName">Nome do Equipamento *</label>
-                                <input type="text" id="equipmentName" required placeholder="Ex: Bola de Vôlei Mikasa">
-                            </div>
-                            <div class="form-group">
-                                <label for="equipmentCategory">Categoria *</label>
-                                <select id="equipmentCategory" required>
-                                    <option value="">Selecione...</option>
-                                    <option value="bola">Bola</option>
-                                    <option value="rede">Rede</option>
-                                    <option value="uniforme">Uniforme</option>
-                                    <option value="equipamento">Outros Equipamentos</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="equipmentQuantity">Quantidade *</label>
-                                <input type="number" id="equipmentQuantity" min="1" required placeholder="1">
-                            </div>
-                            <div class="form-group">
-                                <label for="equipmentCondition">Condição *</label>
-                                <select id="equipmentCondition" required>
-                                    <option value="">Selecione...</option>
-                                    <option value="excelente">Excelente</option>
-                                    <option value="bom">Bom</option>
-                                    <option value="regular">Regular</option>
-                                    <option value="ruim">Ruim</option>
-                                    <option value="inutilizável">Inutilizável</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="equipmentPurchaseDate">Data de Compra *</label>
-                                <input type="date" id="equipmentPurchaseDate" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="equipmentNotes">Observações</label>
-                                <textarea id="equipmentNotes" placeholder="Detalhes adicionais..."></textarea>
-                            </div>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-plus"></i> Adicionar Equipamento
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Filtros e Busca -->
-                <div class="equipment-filters">
-                    <h3><i class="fas fa-filter"></i> Filtros e Busca</h3>
-                    <div class="filters-row">
-                        <div class="filter-group">
-                            <label for="categoryFilter">Categoria:</label>
-                            <select id="categoryFilter">
-                                <option value="todos">Todas as Categorias</option>
-                                <option value="bola">Bola</option>
-                                <option value="rede">Rede</option>
-                                <option value="uniforme">Uniforme</option>
-                                <option value="equipamento">Outros Equipamentos</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label for="conditionFilter">Condição:</label>
-                            <select id="conditionFilter">
-                                <option value="todos">Todas as Condições</option>
-                                <option value="excelente">Excelente</option>
-                                <option value="bom">Bom</option>
-                                <option value="regular">Regular</option>
-                                <option value="ruim">Ruim</option>
-                                <option value="inutilizável">Inutilizável</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label for="equipmentSearch">Buscar:</label>
-                            <input type="text" id="equipmentSearch" placeholder="Nome ou observações..." onkeyup="window.equipmentManager.filterEquipment()">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Lista de Equipamentos -->
-                <div class="equipment-list-container">
-                    <h3><i class="fas fa-list"></i> Inventário de Equipamentos</h3>
-                    <div id="equipmentList" class="equipment-list">
-                        <!-- Lista será renderizada aqui -->
-                    </div>
-                </div>
-
-                <!-- Sistema de Empréstimos -->
-                <div class="loan-system-container">
-                    <h3><i class="fas fa-handshake"></i> Sistema de Empréstimos</h3>
-                    
-                    <!-- Formulário de Empréstimo -->
-                    <div class="loan-form-container">
-                        <h4><i class="fas fa-plus"></i> Novo Empréstimo</h4>
-                        <form id="loanForm" class="loan-form">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="loanEquipment">Equipamento *</label>
-                                    <select id="loanEquipment" required>
-                                        <option value="">Selecione o equipamento...</option>
-                                        <!-- Opções serão preenchidas dinamicamente -->
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="loanMember">Membro *</label>
-                                    <select id="loanMember" required>
-                                        <option value="">Selecione o membro...</option>
-                                        <!-- Opções serão preenchidas dinamicamente -->
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="loanQuantity">Quantidade *</label>
-                                    <input type="number" id="loanQuantity" min="1" required placeholder="1">
-                                </div>
-                                <div class="form-group">
-                                    <label for="loanReturnDate">Data de Devolução Esperada *</label>
-                                    <input type="date" id="loanReturnDate" required>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="loanNotes">Observações</label>
-                                <textarea id="loanNotes" placeholder="Detalhes do empréstimo..."></textarea>
-                            </div>
-                            <div class="form-actions">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-handshake"></i> Criar Empréstimo
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- Lista de Empréstimos -->
-                    <div class="loans-list-container">
-                        <h4><i class="fas fa-list"></i> Histórico de Empréstimos</h4>
-                        <div id="loansList" class="loans-list">
-                            <!-- Lista será renderizada aqui -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Ações Gerais -->
-                <div class="equipment-actions">
-                    <button class="btn btn-secondary" onclick="window.equipmentManager.exportData()">
-                        <i class="fas fa-download"></i> Exportar Dados
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Modal de Edição de Equipamento -->
     <div id="editEquipmentModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-edit"></i> Editar Equipamento</h2>
+                <h3>Editar Equipamento</h3>
                 <span class="close" onclick="window.equipmentManager.closeEditModal()">&times;</span>
             </div>
             <div class="modal-body">
-                <form id="editEquipmentForm" class="equipment-form">
+                <form id="editEquipmentForm">
                     <input type="hidden" id="editEquipmentId">
-                    
                     <div class="form-row">
                         <div class="form-group">
                             <label for="editEquipmentName">Nome do Equipamento *</label>
@@ -680,11 +802,11 @@
                         </div>
                         <div class="form-group">
                             <label for="editEquipmentNotes">Observações</label>
-                            <textarea id="editEquipmentNotes" rows="3"></textarea>
+                            <textarea id="editEquipmentNotes"></textarea>
                         </div>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn btn-primary" onclick="window.equipmentManager.updateEquipment()">
+                        <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i> Salvar Alterações
                         </button>
                         <button type="button" class="btn btn-secondary" onclick="window.equipmentManager.closeEditModal()">
@@ -696,11 +818,15 @@
         </div>
     </div>
 
+    <!-- Scripts -->
     <script src="script.js"></script>
     <script src="payment-manager.js"></script>
     <script src="attendance-manager.js"></script>
     <script src="dashboard-manager.js"></script>
     <script src="notifications-manager.js"></script>
+    <script src="communication-manager.js"></script>
+    <script src="backup-manager.js"></script>
+    <script src="pwa-manager.js"></script>
     <script src="equipment-manager.js"></script>
 </body>
 </html>
