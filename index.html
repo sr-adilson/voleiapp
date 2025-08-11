@@ -331,6 +331,181 @@
                     </div>
                 </div>
             </section>
+
+            <!-- Sistema de Comunicação -->
+            <section class="communication-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-comments"></i> Sistema de Comunicação</h2>
+                    </div>
+                    <div class="card-body">
+                        <!-- Abas de Navegação -->
+                        <div class="communication-tabs">
+                            <button class="tab-btn active" data-tab="announcements">
+                                <i class="fas fa-bullhorn"></i> Mural de Avisos
+                            </button>
+                            <button class="tab-btn" data-tab="messages">
+                                <i class="fas fa-envelope"></i> Mensagens
+                            </button>
+                            <button class="tab-btn" data-tab="history">
+                                <i class="fas fa-history"></i> Histórico
+                            </button>
+                        </div>
+
+                        <!-- Conteúdo das Abas -->
+                        <div class="tab-content">
+                            <!-- Aba: Mural de Avisos -->
+                            <div id="announcements-tab" class="tab-pane active">
+                                <div class="tab-header">
+                                    <h3><i class="fas fa-bullhorn"></i> Novo Aviso</h3>
+                                    <button class="btn btn-primary" onclick="toggleAnnouncementForm()">
+                                        <i class="fas fa-plus"></i> Novo Aviso
+                                    </button>
+                                </div>
+                                
+                                <form id="announcementForm" class="communication-form" style="display: none;">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="announcementTitle">Título *</label>
+                                            <input type="text" id="announcementTitle" name="title" required placeholder="Título do aviso">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="announcementPriority">Prioridade</label>
+                                            <select id="announcementPriority" name="priority">
+                                                <option value="low">Baixa</option>
+                                                <option value="medium" selected>Média</option>
+                                                <option value="high">Alta</option>
+                                                <option value="urgent">Urgente</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="announcementContent">Conteúdo *</label>
+                                            <textarea id="announcementContent" name="content" rows="4" required placeholder="Conteúdo detalhado do aviso..."></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="announcementExpiresAt">Data de Expiração</label>
+                                            <input type="datetime-local" id="announcementExpiresAt" name="expiresAt">
+                                        </div>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-paper-plane"></i> Publicar Aviso
+                                        </button>
+                                        <button type="button" class="btn btn-secondary" onclick="toggleAnnouncementForm()">
+                                            <i class="fas fa-times"></i> Cancelar
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <div class="announcements-container">
+                                    <h4><i class="fas fa-list"></i> Avisos Ativos</h4>
+                                    <div id="announcementsList" class="announcements-list"></div>
+                                </div>
+                            </div>
+
+                            <!-- Aba: Mensagens -->
+                            <div id="messages-tab" class="tab-pane">
+                                <div class="tab-header">
+                                    <h3><i class="fas fa-envelope"></i> Nova Mensagem</h3>
+                                    <button class="btn btn-primary" onclick="toggleMessageForm()">
+                                        <i class="fas fa-plus"></i> Nova Mensagem
+                                    </button>
+                                </div>
+                                
+                                <form id="messageForm" class="communication-form" style="display: none;">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="messageTitle">Título *</label>
+                                            <input type="text" id="messageTitle" name="title" required placeholder="Título da mensagem">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="messagePriority">Prioridade</label>
+                                            <select id="messagePriority" name="priority">
+                                                <option value="low">Baixa</option>
+                                                <option value="medium" selected>Média</option>
+                                                <option value="high">Alta</option>
+                                                <option value="urgent">Urgente</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="messageTarget">Destinatário</label>
+                                            <select id="messageTarget" name="target">
+                                                <option value="all">Todos os Membros</option>
+                                                <option value="specific">Membro Específico</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group" id="specificMemberGroup" style="display: none;">
+                                            <label for="specificMember">Selecionar Membro</label>
+                                            <select id="specificMember" name="specificMember">
+                                                <option value="">Selecione um membro</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="messageContent">Conteúdo *</label>
+                                            <textarea id="messageContent" name="content" rows="4" required placeholder="Conteúdo da mensagem..."></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-paper-plane"></i> Enviar Mensagem
+                                        </button>
+                                        <button type="button" class="btn btn-secondary" onclick="toggleMessageForm()">
+                                            <i class="fas fa-times"></i> Cancelar
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <div class="messages-container">
+                                    <h4><i class="fas fa-list"></i> Mensagens Recebidas</h4>
+                                    <div id="messagesList" class="messages-list"></div>
+                                </div>
+                            </div>
+
+                            <!-- Aba: Histórico -->
+                            <div id="history-tab" class="tab-pane">
+                                <div class="tab-header">
+                                    <h3><i class="fas fa-history"></i> Histórico de Comunicações</h3>
+                                    <button class="btn btn-secondary" onclick="communicationManager.exportCommunicationData()">
+                                        <i class="fas fa-download"></i> Exportar Dados
+                                    </button>
+                                </div>
+                                
+                                <div class="history-container">
+                                    <div id="communicationHistory" class="communication-history"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sistema de Backup e Sincronização -->
+            <section class="backup-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-cloud-upload-alt"></i> Sistema de Backup e Sincronização</h2>
+                    </div>
+                    <div class="card-body">
+                        <!-- Gerenciamento de Usuários -->
+                        <div id="userSection" class="user-section">
+                            <!-- Interface de login/usuário será renderizada aqui -->
+                        </div>
+
+                        <!-- Controles de Backup -->
+                        <div id="backupSection" class="backup-section-content">
+                            <!-- Interface de backup será renderizada aqui -->
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -459,10 +634,12 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
     <script src="payment-manager.js"></script>
     <script src="attendance-manager.js"></script>
     <script src="dashboard-manager.js"></script>
     <script src="notifications-manager.js"></script>
+    <script src="communication-manager.js"></script>
+    <script src="backup-manager.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

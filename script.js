@@ -520,13 +520,36 @@ function closeEditModal() {
 // Inicializar aplicação quando o DOM estiver carregado
 let membershipManager;
 let paymentManager;
+let attendanceManager;
+let dashboardManager;
+let notificationsManager;
+let communicationManager;
+let backupManager;
 
 document.addEventListener('DOMContentLoaded', () => {
     membershipManager = new MembershipManager();
     paymentManager = new PaymentManager(membershipManager);
     
-    // Inicializar sistema de pagamentos
-    initializePaymentSystem();
+    // Aguardar um pouco para garantir que todos os managers estejam carregados
+    setTimeout(() => {
+        attendanceManager = new AttendanceManager(membershipManager);
+        dashboardManager = new DashboardManager({ membershipManager, paymentManager, attendanceManager });
+        notificationsManager = new NotificationsManager({ membershipManager, paymentManager, attendanceManager });
+        communicationManager = new CommunicationManager({ membershipManager, paymentManager, attendanceManager });
+        backupManager = new BackupManager({ membershipManager, paymentManager, attendanceManager, notificationsManager, communicationManager });
+        
+        // Inicializar todos os sistemas
+        initializePaymentSystem();
+        attendanceManager.initializeUI();
+        dashboardManager.renderAll();
+        notificationsManager.runChecks();
+        communicationManager.initializeCommunicationSystem();
+        backupManager.initializeUserSystem();
+        
+        // Configurar sistema de abas para comunicação
+        setupCommunicationTabs();
+        setupCommunicationForms();
+    }, 100);
 });
 
 // ===== SISTEMA DE PAGAMENTOS =====
