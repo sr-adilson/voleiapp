@@ -520,6 +520,13 @@ function closeEditModal() {
 // Inicializar aplicação quando o DOM estiver carregado
 let membershipManager;
 let paymentManager;
+let attendanceManager;
+let dashboardManager;
+let notificationsManager;
+let communicationManager;
+let backupManager;
+let pwaManager;
+let equipmentManager;
 
 document.addEventListener('DOMContentLoaded', () => {
     membershipManager = new MembershipManager();
@@ -527,6 +534,31 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Inicializar sistema de pagamentos
     initializePaymentSystem();
+    
+    // Inicializar outros managers com delay para garantir dependências
+    setTimeout(() => {
+        if (typeof AttendanceManager !== 'undefined') {
+            attendanceManager = new AttendanceManager(membershipManager);
+        }
+        if (typeof DashboardManager !== 'undefined') {
+            dashboardManager = new DashboardManager(membershipManager, paymentManager);
+        }
+        if (typeof NotificationsManager !== 'undefined') {
+            notificationsManager = new NotificationsManager(membershipManager, paymentManager);
+        }
+        if (typeof CommunicationManager !== 'undefined') {
+            communicationManager = new CommunicationManager(membershipManager);
+        }
+        if (typeof BackupManager !== 'undefined') {
+            backupManager = new BackupManager();
+        }
+        if (typeof PWAManager !== 'undefined') {
+            pwaManager = new PWAManager();
+        }
+        if (typeof EquipmentManager !== 'undefined') {
+            equipmentManager = new EquipmentManager(membershipManager);
+        }
+    }, 100);
 });
 
 // ===== SISTEMA DE PAGAMENTOS =====
@@ -847,4 +879,11 @@ function refreshPayments() {
 // Adicionar funcionalidades extras no console para desenvolvimento
 window.membershipManager = membershipManager;
 window.paymentManager = paymentManager;
+window.attendanceManager = attendanceManager;
+window.dashboardManager = dashboardManager;
+window.notificationsManager = notificationsManager;
+window.communicationManager = communicationManager;
+window.backupManager = backupManager;
+window.pwaManager = pwaManager;
+window.equipmentManager = equipmentManager;
 window.refreshPayments = refreshPayments;

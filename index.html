@@ -459,10 +459,248 @@
         </div>
     </div>
 
+    <!-- Sistema de Gestão de Equipamentos -->
+    <section class="equipment-section">
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-boxes"></i> Gestão de Equipamentos</h2>
+            </div>
+            <div class="card-body">
+                <!-- Estatísticas -->
+                <div class="equipment-stats" id="equipmentStats">
+                    <!-- Estatísticas serão renderizadas aqui -->
+                </div>
+
+                <!-- Formulário de Adicionar Equipamento -->
+                <div class="equipment-form-container">
+                    <h3><i class="fas fa-plus"></i> Adicionar Novo Equipamento</h3>
+                    <form id="addEquipmentForm" class="equipment-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="equipmentName">Nome do Equipamento *</label>
+                                <input type="text" id="equipmentName" required placeholder="Ex: Bola de Vôlei Mikasa">
+                            </div>
+                            <div class="form-group">
+                                <label for="equipmentCategory">Categoria *</label>
+                                <select id="equipmentCategory" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="bola">Bola</option>
+                                    <option value="rede">Rede</option>
+                                    <option value="uniforme">Uniforme</option>
+                                    <option value="equipamento">Outros Equipamentos</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="equipmentQuantity">Quantidade *</label>
+                                <input type="number" id="equipmentQuantity" min="1" required placeholder="1">
+                            </div>
+                            <div class="form-group">
+                                <label for="equipmentCondition">Condição *</label>
+                                <select id="equipmentCondition" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="excelente">Excelente</option>
+                                    <option value="bom">Bom</option>
+                                    <option value="regular">Regular</option>
+                                    <option value="ruim">Ruim</option>
+                                    <option value="inutilizável">Inutilizável</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="equipmentPurchaseDate">Data de Compra *</label>
+                                <input type="date" id="equipmentPurchaseDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="equipmentNotes">Observações</label>
+                                <textarea id="equipmentNotes" placeholder="Detalhes adicionais..."></textarea>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Adicionar Equipamento
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Filtros e Busca -->
+                <div class="equipment-filters">
+                    <h3><i class="fas fa-filter"></i> Filtros e Busca</h3>
+                    <div class="filters-row">
+                        <div class="filter-group">
+                            <label for="categoryFilter">Categoria:</label>
+                            <select id="categoryFilter">
+                                <option value="todos">Todas as Categorias</option>
+                                <option value="bola">Bola</option>
+                                <option value="rede">Rede</option>
+                                <option value="uniforme">Uniforme</option>
+                                <option value="equipamento">Outros Equipamentos</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="conditionFilter">Condição:</label>
+                            <select id="conditionFilter">
+                                <option value="todos">Todas as Condições</option>
+                                <option value="excelente">Excelente</option>
+                                <option value="bom">Bom</option>
+                                <option value="regular">Regular</option>
+                                <option value="ruim">Ruim</option>
+                                <option value="inutilizável">Inutilizável</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="equipmentSearch">Buscar:</label>
+                            <input type="text" id="equipmentSearch" placeholder="Nome ou observações..." onkeyup="window.equipmentManager.filterEquipment()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de Equipamentos -->
+                <div class="equipment-list-container">
+                    <h3><i class="fas fa-list"></i> Inventário de Equipamentos</h3>
+                    <div id="equipmentList" class="equipment-list">
+                        <!-- Lista será renderizada aqui -->
+                    </div>
+                </div>
+
+                <!-- Sistema de Empréstimos -->
+                <div class="loan-system-container">
+                    <h3><i class="fas fa-handshake"></i> Sistema de Empréstimos</h3>
+                    
+                    <!-- Formulário de Empréstimo -->
+                    <div class="loan-form-container">
+                        <h4><i class="fas fa-plus"></i> Novo Empréstimo</h4>
+                        <form id="loanForm" class="loan-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="loanEquipment">Equipamento *</label>
+                                    <select id="loanEquipment" required>
+                                        <option value="">Selecione o equipamento...</option>
+                                        <!-- Opções serão preenchidas dinamicamente -->
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="loanMember">Membro *</label>
+                                    <select id="loanMember" required>
+                                        <option value="">Selecione o membro...</option>
+                                        <!-- Opções serão preenchidas dinamicamente -->
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="loanQuantity">Quantidade *</label>
+                                    <input type="number" id="loanQuantity" min="1" required placeholder="1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="loanReturnDate">Data de Devolução Esperada *</label>
+                                    <input type="date" id="loanReturnDate" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="loanNotes">Observações</label>
+                                <textarea id="loanNotes" placeholder="Detalhes do empréstimo..."></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-handshake"></i> Criar Empréstimo
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Lista de Empréstimos -->
+                    <div class="loans-list-container">
+                        <h4><i class="fas fa-list"></i> Histórico de Empréstimos</h4>
+                        <div id="loansList" class="loans-list">
+                            <!-- Lista será renderizada aqui -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ações Gerais -->
+                <div class="equipment-actions">
+                    <button class="btn btn-secondary" onclick="window.equipmentManager.exportData()">
+                        <i class="fas fa-download"></i> Exportar Dados
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal de Edição de Equipamento -->
+    <div id="editEquipmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-edit"></i> Editar Equipamento</h2>
+                <span class="close" onclick="window.equipmentManager.closeEditModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editEquipmentForm" class="equipment-form">
+                    <input type="hidden" id="editEquipmentId">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editEquipmentName">Nome do Equipamento *</label>
+                            <input type="text" id="editEquipmentName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editEquipmentCategory">Categoria *</label>
+                            <select id="editEquipmentCategory" required>
+                                <option value="bola">Bola</option>
+                                <option value="rede">Rede</option>
+                                <option value="uniforme">Uniforme</option>
+                                <option value="equipamento">Outros Equipamentos</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editEquipmentQuantity">Quantidade *</label>
+                            <input type="number" id="editEquipmentQuantity" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editEquipmentCondition">Condição *</label>
+                            <select id="editEquipmentCondition" required>
+                                <option value="excelente">Excelente</option>
+                                <option value="bom">Bom</option>
+                                <option value="regular">Regular</option>
+                                <option value="ruim">Ruim</option>
+                                <option value="inutilizável">Inutilizável</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editEquipmentPurchaseDate">Data de Compra *</label>
+                            <input type="date" id="editEquipmentPurchaseDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editEquipmentNotes">Observações</label>
+                            <textarea id="editEquipmentNotes" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-primary" onclick="window.equipmentManager.updateEquipment()">
+                            <i class="fas fa-save"></i> Salvar Alterações
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="window.equipmentManager.closeEditModal()">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
     <script src="payment-manager.js"></script>
     <script src="attendance-manager.js"></script>
     <script src="dashboard-manager.js"></script>
     <script src="notifications-manager.js"></script>
+    <script src="equipment-manager.js"></script>
 </body>
 </html>
