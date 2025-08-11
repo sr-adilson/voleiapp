@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Mensalistas - Vôlei</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-volleyball-ball"></i> Cadastro de Mensalistas - Vôlei</h1>
+                <p>Gerencie os membros do seu time de vôlei</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Formulário de Cadastro -->
+            <section class="registration-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-user-plus"></i> Novo Mensalista</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="registrationForm" class="registration-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="nome">Nome Completo *</label>
+                                    <input type="text" id="nome" name="nome" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">E-mail *</label>
+                                    <input type="email" id="email" name="email" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="telefone">Telefone *</label>
+                                    <input type="tel" id="telefone" name="telefone" required placeholder="(11) 99999-9999">
+                                </div>
+                                <div class="form-group">
+                                    <label for="idade">Idade *</label>
+                                    <input type="number" id="idade" name="idade" required min="14" max="80">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="posicao">Posição Preferida</label>
+                                    <select id="posicao" name="posicao">
+                                        <option value="">Selecione uma posição</option>
+                                        <option value="levantador">Levantador</option>
+                                        <option value="ponteiro">Ponteiro</option>
+                                        <option value="meio-de-rede">Meio de Rede</option>
+                                        <option value="oposto">Oposto</option>
+                                        <option value="libero">Líbero</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="experiencia">Nível de Experiência</label>
+                                    <select id="experiencia" name="experiencia">
+                                        <option value="">Selecione o nível</option>
+                                        <option value="iniciante">Iniciante</option>
+                                        <option value="intermediario">Intermediário</option>
+                                        <option value="avancado">Avançado</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="mensalidade">Valor da Mensalidade (R$) *</label>
+                                    <input type="number" id="mensalidade" name="mensalidade" required min="0" step="0.01" placeholder="150.00">
+                                </div>
+                                <div class="form-group">
+                                    <label for="dataInicio">Data de Início *</label>
+                                    <input type="date" id="dataInicio" name="dataInicio" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="observacoes">Observações</label>
+                                <textarea id="observacoes" name="observacoes" rows="3" placeholder="Informações adicionais sobre o mensalista..."></textarea>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Cadastrar Mensalista
+                                </button>
+                                <button type="reset" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Limpar Formulário
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Lista de Mensalistas -->
+            <section class="members-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-users"></i> Mensalistas Cadastrados</h2>
+                        <div class="search-container">
+                            <input type="text" id="searchInput" placeholder="Buscar mensalista...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="stats">
+                            <div class="stat-item">
+                                <span class="stat-number" id="totalMembers">0</span>
+                                <span class="stat-label">Total de Mensalistas</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="totalRevenue">R$ 0,00</span>
+                                <span class="stat-label">Receita Mensal</span>
+                            </div>
+                        </div>
+
+                        <div class="members-list" id="membersList">
+                            <div class="empty-state">
+                                <i class="fas fa-volleyball-ball"></i>
+                                <h3>Nenhum mensalista cadastrado ainda</h3>
+                                <p>Cadastre o primeiro mensalista usando o formulário acima.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal de Edição -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-edit"></i> Editar Mensalista</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editForm" class="registration-form">
+                    <input type="hidden" id="editId" name="editId">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editNome">Nome Completo *</label>
+                            <input type="text" id="editNome" name="nome" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editEmail">E-mail *</label>
+                            <input type="email" id="editEmail" name="email" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editTelefone">Telefone *</label>
+                            <input type="tel" id="editTelefone" name="telefone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editIdade">Idade *</label>
+                            <input type="number" id="editIdade" name="idade" required min="14" max="80">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editPosicao">Posição Preferida</label>
+                            <select id="editPosicao" name="posicao">
+                                <option value="">Selecione uma posição</option>
+                                <option value="levantador">Levantador</option>
+                                <option value="ponteiro">Ponteiro</option>
+                                <option value="meio-de-rede">Meio de Rede</option>
+                                <option value="oposto">Oposto</option>
+                                <option value="libero">Líbero</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editExperiencia">Nível de Experiência</label>
+                            <select id="editExperiencia" name="experiencia">
+                                <option value="">Selecione o nível</option>
+                                <option value="iniciante">Iniciante</option>
+                                <option value="intermediario">Intermediário</option>
+                                <option value="avancado">Avançado</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editMensalidade">Valor da Mensalidade (R$) *</label>
+                            <input type="number" id="editMensalidade" name="mensalidade" required min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="editDataInicio">Data de Início *</label>
+                            <input type="date" id="editDataInicio" name="dataInicio" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editObservacoes">Observações</label>
+                        <textarea id="editObservacoes" name="observacoes" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Salvar Alterações
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="closeEditModal()">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
