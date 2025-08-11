@@ -132,7 +132,149 @@
                     </div>
                 </div>
             </section>
+
+            <!-- Seção de Pagamentos -->
+            <section class="payments-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-credit-card"></i> Sistema de Pagamentos</h2>
+                        <div class="header-actions">
+                            <button class="btn btn-success" onclick="paymentManager.exportPaymentData()">
+                                <i class="fas fa-download"></i> Exportar
+                            </button>
+                            <label for="importPayments" class="btn btn-secondary">
+                                <i class="fas fa-upload"></i> Importar
+                            </label>
+                            <input type="file" id="importPayments" accept=".json" style="display: none;" onchange="handlePaymentImport(event)">
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Estatísticas Financeiras -->
+                        <div class="financial-stats">
+                            <div class="stat-card success">
+                                <div class="stat-icon">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>Receita Total</h3>
+                                    <p class="stat-value">R$ <span id="totalRevenue">0.00</span></p>
+                                </div>
+                            </div>
+                            <div class="stat-card warning">
+                                <div class="stat-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>Pendente</h3>
+                                    <p class="stat-value">R$ <span id="pendingRevenue">0.00</span></p>
+                                </div>
+                            </div>
+                            <div class="stat-card danger">
+                                <div class="stat-icon">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>Em Atraso</h3>
+                                    <p class="stat-value">R$ <span id="overdueRevenue">0.00</span></p>
+                                </div>
+                            </div>
+                            <div class="stat-card info">
+                                <div class="stat-icon">
+                                    <i class="fas fa-percentage"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3>Taxa de Pagamento</h3>
+                                    <p class="stat-value"><span id="paymentRate">0</span>%</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Filtros de Pagamentos -->
+                        <div class="payment-filters">
+                            <div class="filter-group">
+                                <label for="paymentStatusFilter">Status:</label>
+                                <select id="paymentStatusFilter" onchange="filterPayments()">
+                                    <option value="">Todos os Status</option>
+                                    <option value="pending">Pendente</option>
+                                    <option value="paid">Pago</option>
+                                    <option value="overdue">Em Atraso</option>
+                                    <option value="cancelled">Cancelado</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="paymentMonthFilter">Mês:</label>
+                                <select id="paymentMonthFilter" onchange="filterPayments()">
+                                    <option value="">Todos os Meses</option>
+                                    <option value="0">Janeiro</option>
+                                    <option value="1">Fevereiro</option>
+                                    <option value="2">Março</option>
+                                    <option value="3">Abril</option>
+                                    <option value="4">Maio</option>
+                                    <option value="5">Junho</option>
+                                    <option value="6">Julho</option>
+                                    <option value="7">Agosto</option>
+                                    <option value="8">Setembro</option>
+                                    <option value="9">Outubro</option>
+                                    <option value="10">Novembro</option>
+                                    <option value="11">Dezembro</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="paymentYearFilter">Ano:</label>
+                                <select id="paymentYearFilter" onchange="filterPayments()">
+                                    <option value="">Todos os Anos</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Lista de Pagamentos -->
+                        <div class="payments-list" id="paymentsList">
+                            <!-- Pagamentos serão carregados aqui -->
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
+    </div>
+
+    <!-- Modal de Pagamento -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-credit-card"></i> Gerenciar Pagamento</h2>
+                <span class="close" onclick="closePaymentModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="payment-details">
+                    <div class="member-info">
+                        <h3 id="paymentMemberName">Nome do Membro</h3>
+                        <p id="paymentMemberEmail">email@exemplo.com</p>
+                    </div>
+                    <div class="payment-info">
+                        <div class="info-row">
+                            <span class="label">Valor:</span>
+                            <span class="value" id="paymentAmount">R$ 0.00</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Vencimento:</span>
+                            <span class="value" id="paymentDueDate">01/01/2024</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="label">Status:</span>
+                            <span class="value" id="paymentStatus">Pendente</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="payment-actions" id="paymentActions">
+                    <!-- Ações serão carregadas dinamicamente -->
+                </div>
+
+                <div class="payment-history" id="paymentHistory">
+                    <!-- Histórico será carregado dinamicamente -->
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Modal de Edição -->
@@ -221,5 +363,6 @@
     </div>
 
     <script src="script.js"></script>
+    <script src="payment-manager.js"></script>
 </body>
 </html>

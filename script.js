@@ -137,6 +137,12 @@ class MembershipManager {
         this.updateStats();
         this.displayMembers();
         
+        // Atualizar sistema de pagamentos
+        if (window.paymentManager) {
+            window.paymentManager.generateMonthlyPayments();
+            window.refreshPayments();
+        }
+        
         // Limpar formulário
         document.getElementById('registrationForm').reset();
         document.getElementById('dataInicio').value = new Date().toISOString().split('T')[0];
@@ -217,6 +223,12 @@ class MembershipManager {
             this.displayMembers();
             this.closeEditModal();
             
+            // Atualizar sistema de pagamentos
+            if (window.paymentManager) {
+                window.paymentManager.generateMonthlyPayments();
+                window.refreshPayments();
+            }
+            
             this.showAlert('Mensalista atualizado com sucesso!', 'success');
         }
     }
@@ -237,6 +249,13 @@ class MembershipManager {
             this.saveMembers();
             this.updateStats();
             this.displayMembers();
+            
+            // Atualizar sistema de pagamentos
+            if (window.paymentManager) {
+                window.paymentManager.generateMonthlyPayments();
+                window.refreshPayments();
+            }
+            
             this.showAlert('Mensalista excluído com sucesso!', 'success');
         }
     }
@@ -500,10 +519,332 @@ function closeEditModal() {
 
 // Inicializar aplicação quando o DOM estiver carregado
 let membershipManager;
+let paymentManager;
 
 document.addEventListener('DOMContentLoaded', () => {
     membershipManager = new MembershipManager();
+    paymentManager = new PaymentManager(membershipManager);
+    
+    // Inicializar sistema de pagamentos
+    initializePaymentSystem();
 });
+
+// ===== SISTEMA DE PAGAMENTOS =====
+
+// Inicializar sistema de pagamentos
+function initializePaymentSystem() {
+    populateYearFilter();
+    displayPayments();
+    updatePaymentStats();
+    setupPaymentEventListeners();
+}
+
+// Configurar event listeners para pagamentos
+function setupPaymentEventListeners() {
+    // Filtros
+    document.getElementById('paymentStatusFilter').addEventListener('change', filterPayments);
+    document.getElementById('paymentMonthFilter').addEventListener('change', filterPayments);
+    document.getElementById('paymentYearFilter').addEventListener('change', filterPayments);
+}
+
+// Popular filtro de anos
+function populateYearFilter() {
+    const yearFilter = document.getElementById('paymentYearFilter');
+    const currentYear = new Date().getFullYear();
+    
+    for (let year = currentYear - 2; year <= currentYear + 1; year++) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        if (year === currentYear) option.selected = true;
+        yearFilter.appendChild(option);
+    }
+}
+
+// Exibir pagamentos
+function displayPayments(paymentsToShow = null) {
+    const paymentsList = document.getElementById('paymentsList');
+    const payments = paymentsToShow || paymentManager.payments;
+    
+    if (payments.length === 0) {
+        paymentsList.innerHTML = `
+            <div class="payments-empty">
+                <i class="fas fa-credit-card"></i>
+                <h3>Nenhum pagamento encontrado</h3>
+                <p>Os pagamentos mensais serão gerados automaticamente para todos os membros.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    paymentsList.innerHTML = payments.map(payment => {
+        const member = membershipManager.members.find(m => m.id === payment.memberId);
+        if (!member) return '';
+        
+        return createPaymentItem(payment, member);
+    }).join('');
+}
+
+// Criar item de pagamento
+function createPaymentItem(payment, member) {
+    const dueDate = new Date(payment.dueDate);
+    const isOverdue = payment.isOverdue();
+    const daysOverdue = payment.getDaysOverdue();
+    
+    return `
+        <div class="payment-item" onclick="openPaymentModal('${payment.id}')">
+            <div class="payment-info">
+                <div class="payment-member">${member.nome}</div>
+                <div class="payment-details">
+                    <span>Vencimento: ${formatDate(payment.dueDate)}</span>
+                    ${isOverdue ? `<span class="text-danger">${daysOverdue} dias em atraso</span>` : ''}
+                    <span>${member.posicao ? formatPosition(member.posicao) : 'Sem posição'}</span>
+                </div>
+            </div>
+            <div class="payment-amount">R$ ${payment.amount.toFixed(2)}</div>
+            <div class="payment-status ${payment.status}">${payment.getStatusText()}</div>
+            <div class="payment-actions">
+                ${getPaymentActionButtons(payment)}
+            </div>
+        </div>
+    `;
+}
+
+// Obter botões de ação para pagamento
+function getPaymentActionButtons(payment) {
+    switch (payment.status) {
+        case 'pending':
+            return `
+                <button class="btn-success" onclick="event.stopPropagation(); markPaymentAsPaid('${payment.id}')">
+                    <i class="fas fa-check"></i> Marcar Pago
+                </button>
+                <button class="btn-warning" onclick="event.stopPropagation(); editPayment('${payment.id}')">
+                    <i class="fas fa-edit"></i> Editar
+                </button>
+            `;
+        case 'overdue':
+            return `
+                <button class="btn-success" onclick="event.stopPropagation(); markPaymentAsPaid('${payment.id}')">
+                    <i class="fas fa-check"></i> Marcar Pago
+                </button>
+                <button class="btn-danger" onclick="event.stopPropagation(); cancelPayment('${payment.id}')">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+            `;
+        case 'paid':
+            return `
+                <button class="btn-warning" onclick="event.stopPropagation(); editPayment('${payment.id}')">
+                    <i class="fas fa-edit"></i> Editar
+                </button>
+            `;
+        case 'cancelled':
+            return `
+                <button class="btn-success" onclick="event.stopPropagation(); reactivatePayment('${payment.id}')">
+                    <i class="fas fa-redo"></i> Reativar
+                </button>
+            `;
+        default:
+            return '';
+    }
+}
+
+// Filtrar pagamentos
+function filterPayments() {
+    const statusFilter = document.getElementById('paymentStatusFilter').value;
+    const monthFilter = document.getElementById('paymentMonthFilter').value;
+    const yearFilter = document.getElementById('paymentYearFilter').value;
+    
+    let filteredPayments = paymentManager.payments;
+    
+    if (statusFilter) {
+        filteredPayments = filteredPayments.filter(p => p.status === statusFilter);
+    }
+    
+    if (monthFilter !== '') {
+        filteredPayments = filteredPayments.filter(p => {
+            const paymentDate = new Date(p.dueDate);
+            return paymentDate.getMonth() === parseInt(monthFilter);
+        });
+    }
+    
+    if (yearFilter !== '') {
+        filteredPayments = filteredPayments.filter(p => {
+            const paymentDate = new Date(p.dueDate);
+            return paymentDate.getFullYear() === parseInt(yearFilter);
+        });
+    }
+    
+    displayPayments(filteredPayments);
+}
+
+// Atualizar estatísticas de pagamentos
+function updatePaymentStats() {
+    const stats = paymentManager.getFinancialStats();
+    
+    document.getElementById('totalRevenue').textContent = stats.totalRevenue;
+    document.getElementById('pendingRevenue').textContent = stats.pendingRevenue;
+    document.getElementById('overdueRevenue').textContent = stats.overdueRevenue;
+    document.getElementById('paymentRate').textContent = stats.paymentRate;
+}
+
+// Marcar pagamento como pago
+function markPaymentAsPaid(paymentId) {
+    const payment = paymentManager.payments.find(p => p.id === paymentId);
+    if (!payment) return;
+    
+    const paymentMethod = prompt('Forma de pagamento (dinheiro, cartão, PIX, etc.):', 'dinheiro');
+    if (!paymentMethod) return;
+    
+    const notes = prompt('Observações (opcional):', '');
+    
+    if (paymentManager.markPaymentAsPaid(paymentId, paymentMethod, notes)) {
+        displayPayments();
+        updatePaymentStats();
+        membershipManager.showAlert('Pagamento marcado como pago com sucesso!', 'success');
+    }
+}
+
+// Cancelar pagamento
+function cancelPayment(paymentId) {
+    const reason = prompt('Motivo do cancelamento:', '');
+    if (reason === null) return;
+    
+    if (paymentManager.cancelPayment(paymentId, reason)) {
+        displayPayments();
+        updatePaymentStats();
+        membershipManager.showAlert('Pagamento cancelado com sucesso!', 'success');
+    }
+}
+
+// Reativar pagamento cancelado
+function reactivatePayment(paymentId) {
+    const payment = paymentManager.payments.find(p => p.id === paymentId);
+    if (!payment) return;
+    
+    payment.status = 'pending';
+    payment.notes = '';
+    payment.updatedAt = new Date().toISOString();
+    paymentManager.savePayments();
+    
+    displayPayments();
+    updatePaymentStats();
+    membershipManager.showAlert('Pagamento reativado com sucesso!', 'success');
+}
+
+// Editar pagamento
+function editPayment(paymentId) {
+    const payment = paymentManager.payments.find(p => p.id === paymentId);
+    if (!payment) return;
+    
+    const newAmount = prompt('Novo valor da mensalidade:', payment.amount);
+    if (newAmount === null) return;
+    
+    const newDueDate = prompt('Nova data de vencimento (YYYY-MM-DD):', payment.dueDate.split('T')[0]);
+    if (newDueDate === null) return;
+    
+    payment.amount = parseFloat(newAmount);
+    payment.dueDate = newDueDate;
+    payment.updatedAt = new Date().toISOString();
+    paymentManager.savePayments();
+    
+    displayPayments();
+    updatePaymentStats();
+    membershipManager.showAlert('Pagamento atualizado com sucesso!', 'success');
+}
+
+// Abrir modal de pagamento
+function openPaymentModal(paymentId) {
+    const payment = paymentManager.payments.find(p => p.id === paymentId);
+    if (!payment) return;
+    
+    const member = membershipManager.members.find(m => m.id === payment.memberId);
+    if (!member) return;
+    
+    // Preencher informações do modal
+    document.getElementById('paymentMemberName').textContent = member.nome;
+    document.getElementById('paymentMemberEmail').textContent = member.email;
+    document.getElementById('paymentAmount').textContent = `R$ ${payment.amount.toFixed(2)}`;
+    document.getElementById('paymentDueDate').textContent = formatDate(payment.dueDate);
+    document.getElementById('paymentStatus').textContent = payment.getStatusText();
+    
+    // Configurar ações
+    document.getElementById('paymentActions').innerHTML = getPaymentActionButtons(payment);
+    
+    // Mostrar histórico
+    showPaymentHistory(payment);
+    
+    // Exibir modal
+    document.getElementById('paymentModal').style.display = 'block';
+}
+
+// Fechar modal de pagamento
+function closePaymentModal() {
+    document.getElementById('paymentModal').style.display = 'none';
+}
+
+// Mostrar histórico do pagamento
+function showPaymentHistory(payment) {
+    const historyContainer = document.getElementById('paymentHistory');
+    
+    const history = [
+        {
+            date: payment.createdAt,
+            action: 'Pagamento criado'
+        }
+    ];
+    
+    if (payment.paymentDate) {
+        history.push({
+            date: payment.paymentDate,
+            action: `Marcado como pago (${payment.paymentMethod})`
+        });
+    }
+    
+    if (payment.updatedAt !== payment.createdAt) {
+        history.push({
+            date: payment.updatedAt,
+            action: 'Última atualização'
+        });
+    }
+    
+    historyContainer.innerHTML = `
+        <h4><i class="fas fa-history"></i> Histórico</h4>
+        ${history.map(h => `
+            <div class="history-item">
+                <span class="history-date">${formatDate(h.date)}</span>
+                <span class="history-action">${h.action}</span>
+            </div>
+        `).join('')}
+    `;
+}
+
+// Importar dados de pagamentos
+function handlePaymentImport(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    paymentManager.importPaymentData(file)
+        .then(message => {
+            membershipManager.showAlert(message, 'success');
+            displayPayments();
+            updatePaymentStats();
+        })
+        .catch(error => {
+            membershipManager.showAlert(error, 'error');
+        });
+    
+    // Limpar input
+    event.target.value = '';
+}
+
+// Atualizar pagamentos quando membros são alterados
+function refreshPayments() {
+    paymentManager.generateMonthlyPayments();
+    displayPayments();
+    updatePaymentStats();
+}
 
 // Adicionar funcionalidades extras no console para desenvolvimento
 window.membershipManager = membershipManager;
+window.paymentManager = paymentManager;
+window.refreshPayments = refreshPayments;
