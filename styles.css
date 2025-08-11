@@ -1098,3 +1098,24 @@ textarea:focus {
 @media (max-width: 768px) {
     .dashboard-grid { grid-template-columns: 1fr; }
 }
+
+/* ===== NOTIFICAÇÕES ===== */
+.notifications-section { margin-top: 2rem; }
+.notifications-actions { display: flex; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.notifications-list { display: flex; flex-direction: column; gap: 0.75rem; }
+.notification-item {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+}
+.notification-item .icon { font-size: 1.1rem; }
+.notification-item .content { flex: 1; }
+.notification-item .title { font-weight: 600; color: var(--text-primary); }
+.notification-item .desc { color: var(--text-secondary); font-size: 0.9rem; }
+.notification-item.overdue { border-left: 4px solid #ef4444; }
+.notification-item.due-soon { border-left: 4px solid #f59e0b; }
+.notification-item.today { border-left: 4px solid #3b82f6; }

@@ -134,6 +134,26 @@
                 </div>
             </section>
 
+            <!-- Seção de Notificações -->
+            <section class="notifications-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-bell"></i> Notificações e Lembretes</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="notifications-actions">
+                            <button class="btn btn-primary" onclick="notificationsManager.runChecks(true)">
+                                <i class="fas fa-sync"></i> Verificar Agora
+                            </button>
+                            <button class="btn btn-secondary" onclick="notificationsManager.exportReminders()">
+                                <i class="fas fa-download"></i> Exportar Lembretes
+                            </button>
+                        </div>
+                        <div id="notificationsList" class="notifications-list"></div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Seção de Dashboard -->
             <section class="dashboard-section">
                 <div class="card">
@@ -443,5 +463,6 @@
     <script src="payment-manager.js"></script>
     <script src="attendance-manager.js"></script>
     <script src="dashboard-manager.js"></script>
+    <script src="notifications-manager.js"></script>
 </body>
 </html>
