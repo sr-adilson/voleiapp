@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
@@ -127,6 +128,31 @@
                                 <i class="fas fa-volleyball-ball"></i>
                                 <h3>Nenhum mensalista cadastrado ainda</h3>
                                 <p>Cadastre o primeiro mensalista usando o formulário acima.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção de Dashboard -->
+            <section class="dashboard-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-chart-line"></i> Dashboard</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="dashboard-grid">
+                            <div class="chart-card">
+                                <h3>Membros por Posição</h3>
+                                <canvas id="chartMembersByPosition"></canvas>
+                            </div>
+                            <div class="chart-card">
+                                <h3>Receita x Pendências (Últimos 6 meses)</h3>
+                                <canvas id="chartRevenue"></canvas>
+                            </div>
+                            <div class="chart-card">
+                                <h3>Presença por Mês</h3>
+                                <canvas id="chartAttendance"></canvas>
                             </div>
                         </div>
                     </div>
@@ -416,5 +442,6 @@
     <script src="script.js"></script>
     <script src="payment-manager.js"></script>
     <script src="attendance-manager.js"></script>
+    <script src="dashboard-manager.js"></script>
 </body>
 </html>

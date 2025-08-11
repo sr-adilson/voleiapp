@@ -1076,3 +1076,25 @@ textarea:focus {
     .attendance-header, .attendance-row { grid-template-columns: 1fr; }
     .att-buttons { justify-content: center; }
 }
+
+/* ===== DASHBOARD ===== */
+.dashboard-section { margin-top: 2rem; }
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+.chart-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1rem 1rem 1.5rem;
+}
+.chart-card h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+@media (max-width: 768px) {
+    .dashboard-grid { grid-template-columns: 1fr; }
+}
