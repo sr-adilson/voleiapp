@@ -520,14 +520,88 @@ function closeEditModal() {
 // Inicializar aplicação quando o DOM estiver carregado
 let membershipManager;
 let paymentManager;
+let attendanceManager;
+let dashboardManager;
+let notificationsManager;
+let communicationManager;
+let backupManager;
+let pwaManager;
 
 document.addEventListener('DOMContentLoaded', () => {
     membershipManager = new MembershipManager();
     paymentManager = new PaymentManager(membershipManager);
     
-    // Inicializar sistema de pagamentos
-    initializePaymentSystem();
+    // Aguardar um pouco para garantir que todos os managers estejam carregados
+    setTimeout(() => {
+        attendanceManager = new AttendanceManager(membershipManager);
+        dashboardManager = new DashboardManager({ membershipManager, paymentManager, attendanceManager });
+        notificationsManager = new NotificationsManager({ membershipManager, paymentManager, attendanceManager });
+        communicationManager = new CommunicationManager({ membershipManager, paymentManager, attendanceManager });
+        backupManager = new BackupManager({ membershipManager, paymentManager, attendanceManager, notificationsManager, communicationManager });
+        pwaManager = new PWAManager();
+        
+        // Inicializar todos os sistemas
+        initializePaymentSystem();
+        attendanceManager.initializeUI();
+        dashboardManager.renderAll();
+        notificationsManager.runChecks();
+        communicationManager.initializeCommunicationSystem();
+        backupManager.initializeUserSystem();
+        
+        // Configurar sistema de abas para comunicação
+        setupCommunicationTabs();
+        setupCommunicationForms();
+        
+        console.log('Todos os managers inicializados com sucesso');
+    }, 100);
 });
+
+// ===== FUNÇÕES AUXILIARES PARA COMUNICAÇÃO =====
+
+// Configurar sistema de abas para comunicação
+function setupCommunicationTabs() {
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+    
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const targetTab = button.getAttribute('data-tab');
+            
+            // Remover classe ativa de todos os botões e painéis
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabPanes.forEach(pane => pane.classList.remove('active'));
+            
+            // Adicionar classe ativa ao botão clicado e painel correspondente
+            button.classList.add('active');
+            document.getElementById(targetTab).classList.add('active');
+        });
+    });
+}
+
+// Configurar formulários de comunicação
+function setupCommunicationForms() {
+    // Formulário de anúncios
+    const announcementForm = document.getElementById('announcementForm');
+    if (announcementForm) {
+        announcementForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (window.communicationManager) {
+                window.communicationManager.createAnnouncement();
+            }
+        });
+    }
+    
+    // Formulário de mensagens
+    const messageForm = document.getElementById('messageForm');
+    if (messageForm) {
+        messageForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (window.communicationManager) {
+                window.communicationManager.createMessage();
+            }
+        });
+    }
+}
 
 // ===== SISTEMA DE PAGAMENTOS =====
 

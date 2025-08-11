@@ -3,7 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Mensalistas - Vôlei</title>
+    <title>VoleiApp - Sistema de Gestão</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Sistema completo de gestão para times de vôlei com controle de membros, pagamentos, treinos e comunicação">
+    <meta name="theme-color" content="#16213e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="VoleiApp">
+    <meta name="msapplication-TileColor" content="#16213e">
+    <meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+    <link rel="apple-touch-icon" href="/icons/icon-152x152.png">
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -13,8 +30,20 @@
     <div class="container">
         <header class="header">
             <div class="header-content">
-                <h1><i class="fas fa-volleyball-ball"></i> Cadastro de Mensalistas - Vôlei</h1>
-                <p>Gerencie os membros do seu time de vôlei</p>
+                <div class="header-main">
+                    <h1><i class="fas fa-volleyball-ball"></i> VoleiApp</h1>
+                    <p>Sistema de Gestão para Times de Vôlei</p>
+                </div>
+                <div class="header-actions">
+                    <div class="online-status online">
+                        <i class="fas fa-wifi"></i>
+                        <span>Online</span>
+                    </div>
+                    <button class="btn btn-secondary pwa-status-btn" onclick="window.pwaManager.showPWAStatus()">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>PWA</span>
+                    </button>
+                </div>
             </div>
         </header>
 
@@ -459,10 +488,87 @@
         </div>
     </div>
 
+    <!-- Sistema PWA -->
+    <section class="pwa-section">
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-mobile-alt"></i> Funcionalidades Mobile (PWA)</h2>
+            </div>
+            <div class="card-body">
+                <div class="pwa-features">
+                    <div class="pwa-feature">
+                        <div class="feature-icon">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h3>Instalação</h3>
+                            <p>Instale o VoleiApp na sua tela inicial para acesso rápido e funcionalidades offline</p>
+                            <button class="btn btn-primary install-pwa-btn" onclick="window.pwaManager.installPWA()">
+                                <i class="fas fa-download"></i> Instalar App
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="pwa-feature">
+                        <div class="feature-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h3>Notificações Push</h3>
+                            <p>Receba notificações sobre pagamentos vencidos, treinos próximos e novas mensagens</p>
+                            <button class="btn btn-secondary notification-btn" onclick="window.pwaManager.requestNotificationPermission()">
+                                <i class="fas fa-bell"></i> Ativar Notificações
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="pwa-feature">
+                        <div class="feature-icon">
+                            <i class="fas fa-wifi"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h3>Modo Offline</h3>
+                            <p>Acesse seus dados mesmo sem conexão com a internet</p>
+                            <div class="offline-status">
+                                <span class="status-indicator online"></span>
+                                <span>Modo Online</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pwa-feature">
+                        <div class="feature-icon">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h3>Sincronização</h3>
+                            <p>Sincronização automática em background quando a conexão for restaurada</p>
+                            <button class="btn btn-secondary sync-btn" onclick="window.pwaManager.syncPendingData()">
+                                <i class="fas fa-sync-alt"></i> Sincronizar Agora
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pwa-actions">
+                    <button class="btn btn-secondary" onclick="window.pwaManager.clearCache()">
+                        <i class="fas fa-trash"></i> Limpar Cache
+                    </button>
+                    <button class="btn btn-secondary" onclick="window.pwaManager.showPWAStatus()">
+                        <i class="fas fa-info-circle"></i> Status PWA
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <script src="script.js"></script>
     <script src="payment-manager.js"></script>
     <script src="attendance-manager.js"></script>
     <script src="dashboard-manager.js"></script>
     <script src="notifications-manager.js"></script>
+    <script src="communication-manager.js"></script>
+    <script src="backup-manager.js"></script>
+    <script src="pwa-manager.js"></script>
 </body>
 </html>
