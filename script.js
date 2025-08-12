@@ -526,27 +526,38 @@ let notificationsManager;
 let communicationManager;
 let backupManager;
 let pwaManager;
+let equipmentManager;
 
 document.addEventListener('DOMContentLoaded', () => {
     membershipManager = new MembershipManager();
     paymentManager = new PaymentManager(membershipManager);
     
-    // Aguardar um pouco para garantir que todos os managers estejam carregados
+    // Inicializar sistema de pagamentos
+    initializePaymentSystem();
+    
+    // Inicializar outros managers com delay para garantir dependências
     setTimeout(() => {
-        attendanceManager = new AttendanceManager(membershipManager);
-        dashboardManager = new DashboardManager({ membershipManager, paymentManager, attendanceManager });
-        notificationsManager = new NotificationsManager({ membershipManager, paymentManager, attendanceManager });
-        communicationManager = new CommunicationManager({ membershipManager, paymentManager, attendanceManager });
-        backupManager = new BackupManager({ membershipManager, paymentManager, attendanceManager, notificationsManager, communicationManager });
-        pwaManager = new PWAManager();
-        
-        // Inicializar todos os sistemas
-        initializePaymentSystem();
-        attendanceManager.initializeUI();
-        dashboardManager.renderAll();
-        notificationsManager.runChecks();
-        communicationManager.initializeCommunicationSystem();
-        backupManager.initializeUserSystem();
+        if (typeof AttendanceManager !== 'undefined') {
+            attendanceManager = new AttendanceManager(membershipManager);
+        }
+        if (typeof DashboardManager !== 'undefined') {
+            dashboardManager = new DashboardManager(membershipManager, paymentManager);
+        }
+        if (typeof NotificationsManager !== 'undefined') {
+            notificationsManager = new NotificationsManager(membershipManager, paymentManager);
+        }
+        if (typeof CommunicationManager !== 'undefined') {
+            communicationManager = new CommunicationManager(membershipManager);
+        }
+        if (typeof BackupManager !== 'undefined') {
+            backupManager = new BackupManager();
+        }
+        if (typeof PWAManager !== 'undefined') {
+            pwaManager = new PWAManager();
+        }
+        if (typeof EquipmentManager !== 'undefined') {
+            equipmentManager = new EquipmentManager(membershipManager);
+        }
         
         // Configurar sistema de abas para comunicação
         setupCommunicationTabs();
@@ -921,4 +932,11 @@ function refreshPayments() {
 // Adicionar funcionalidades extras no console para desenvolvimento
 window.membershipManager = membershipManager;
 window.paymentManager = paymentManager;
+window.attendanceManager = attendanceManager;
+window.dashboardManager = dashboardManager;
+window.notificationsManager = notificationsManager;
+window.communicationManager = communicationManager;
+window.backupManager = backupManager;
+window.pwaManager = pwaManager;
+window.equipmentManager = equipmentManager;
 window.refreshPayments = refreshPayments;
